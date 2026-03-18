@@ -16,8 +16,8 @@ export default function Calculator() {
                         rounded-xl
                         flex
                         flex-row
-                        relative
                         z-20
+                        relative
                         ">
             <div className="flex flex-col flex-2 text-white m-1">
                 <Header />

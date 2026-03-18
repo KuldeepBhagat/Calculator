@@ -8,8 +8,7 @@ export default function App() {
                         bg-cover
                         flex justify-center items-center 
                         overflow-hidden
-                        z-10
-                        absolute">
+                        z-10">
             <Calculator/>
         </div>
     )
