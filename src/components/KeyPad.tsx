@@ -1,4 +1,9 @@
-export default function Keypad() {
+type props = {
+    //setValue: React.Dispatch<React.SetStateAction<string>>
+    calculate: (key: string) => void
+}
+
+export default function Keypad({calculate}: props) {
 
     const grid = [
         "%", "CE", "C", "⌫",
@@ -23,11 +28,12 @@ export default function Keypad() {
                 } else if (m == "=") {
                     color = "bg-blue-600"
                     HoverColor = "hover:bg-blue-500"
-
                 }
                 let buttonStyle = `${color} rounded-md ${HoverColor}`
                 return (
-                    <button key={index} className={buttonStyle}>{m}</button>
+                    <button key={index} 
+                            className={buttonStyle}
+                            onClick={() => calculate(m)}>{m}</button>
                 )
             })}
         </div>

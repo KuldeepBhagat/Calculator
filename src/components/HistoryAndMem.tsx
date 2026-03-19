@@ -3,7 +3,7 @@ import { useState } from "react"
 export default function HistoryAndMemory() {
     const buttonStyle = "p-2 hover:text-white/50"
 
-    const [activeTab, setActiveTab] = useState("History");
+    const [activeTab, setActiveTab] = useState<string>("History");
     return (
         <>
             <div className="items-center flex-row p-2 gap-2 text-white">
