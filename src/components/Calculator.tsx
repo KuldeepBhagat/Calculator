@@ -5,43 +5,83 @@ import Keypad from "./KeyPad"
 import HistoryAndMemory from "./HistoryAndMem"
 import { useState} from 'react'
 
-
 export default function Calculator() {
-    const [CurrentNumber, setCurrentNumber] = useState<string>("0")
+    const [CurrentNumber, setCurrentNumber] = useState<Array<string>>(["0"])
     const [Record, setRecord] = useState<Array<string>>([])
+    const [waitingState, setWaitingState] = useState<boolean[]>([false, false])
 
     const operands: string[] = ["0","1","2","3","4","5","6","7","8","9","."]
-    const operators: Record<string, any> = {
-        "+": "+",
-        "-": "-",
-        "x": "*",
-        "÷": "/"
-    }
+    const operators: string[] = ["+", "−", "÷", "×"]
+    const specialOperators: string[] = ["%", "¹/ₓ", "x²", "√x"]
+    const ControlButtons: string[] = ["⌫", "C", "CE"]
 
     function calculate(key: string): void {
-        if(CurrentNumber === "0") {
-            setCurrentNumber("")
-        } else if (Record.length === 2) {
-            const num1 = parseFloat(Record[0]!)
-            const operator = Record[1];
-            const num2 = parseFloat(CurrentNumber)
-            let result: number;
-            
-            switch (operator) {
-                case "+": result =  num1 + num2;
-            }
-            console.log(result!)
-            setCurrentNumber(`${result!}`)
-
+        
+        if(CurrentNumber[0] === "0" && operands.includes(key)) {
+            setCurrentNumber([])
         }
+
+        if(ControlButtons.includes(key)) {
+            switch (key) {
+                case "⌫":
+                    if(waitingState[0]) {
+                        break;
+                    }
+                    CurrentNumber.length > 1 ? 
+                       setCurrentNumber(prev => prev.slice(0, -1)) :
+                       setCurrentNumber(["0"]);
+                    break;
+                case "C":
+                    setCurrentNumber(["0"])
+                    setRecord([])
+                    break;
+                case "CE": 
+                    setCurrentNumber(["0"])
+                    break;
+            }
+        } 
+
         if(operands.includes(key)) {
-            setCurrentNumber(prev => prev + key)
-        } else if(
-            operators[key] && 
-            CurrentNumber.length > 0
-        ) {
-            setRecord(prev => [...prev, CurrentNumber, key])
-            setCurrentNumber("0")
+            if(waitingState[0]) {
+                setCurrentNumber([])
+            }
+            setCurrentNumber(prev => [...prev, key])
+            setWaitingState(prev => [prev[0] = false])
+            console.log(CurrentNumber.length)
+        }
+
+        if(operators.includes(key)) {
+            setWaitingState(prev => [prev[0] = true])
+            if(operators.includes(Record.at(-1)!)) {
+                setRecord(prev => [...prev.slice(0, -1), key])
+            } else {
+                const CompleteNumber = CurrentNumber.join('');
+                setRecord([CompleteNumber, key])
+            }
+            
+            if(CurrentNumber[0] != "0" && Record.length > 1) {
+                const num1 = parseFloat(Record[0]!)
+                const num2 = parseFloat(CurrentNumber.join(''))
+                let result: number;
+                switch (key) {
+                    case "+": result = num1 + num2
+                              setRecord([`${result}`, key])
+                              setCurrentNumber([`${result}`])
+                              break;
+                    case "−": result = num1 - num2
+                              setRecord([`${result}`, key])
+                              setCurrentNumber([`${result}`])
+                              break;
+                    case "÷": result = num1 / num2
+                              setRecord([`${result}`, key])
+                              setCurrentNumber([`${result}`])
+                              break;
+                    case "×": result = num1 * num2
+                              setRecord([`${result}`, key])
+                              setCurrentNumber([`${result}`])
+                              break;
+                }
+            }  
         }
     }
 

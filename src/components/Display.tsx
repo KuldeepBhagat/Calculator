@@ -1,5 +1,5 @@
 type props = {
-    value: string,
+    value: string[],
     record: Array<string>
 }
 
