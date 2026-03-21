@@ -3,85 +3,125 @@ import Display from "./Display"
 import MemoryButton from "./MemoryButtons"
 import Keypad from "./KeyPad"
 import HistoryAndMemory from "./HistoryAndMem"
-import { useState} from 'react'
+import { useState } from 'react'
 
 export default function Calculator() {
+
+    interface Operations {
+        num1: string,
+        operator: string,
+        num2: string,
+        result: string
+    }
+
     const [CurrentNumber, setCurrentNumber] = useState<Array<string>>(["0"])
     const [Record, setRecord] = useState<Array<string>>([])
     const [waitingState, setWaitingState] = useState<boolean[]>([false, false])
+    const [operationPipeline, setOperationPipeline] = useState<Operations[]>([])
 
-    const operands: string[] = ["0","1","2","3","4","5","6","7","8","9","."]
+    const operands: string[] = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "."]
     const operators: string[] = ["+", "−", "÷", "×"]
     const specialOperators: string[] = ["%", "¹/ₓ", "x²", "√x"]
     const ControlButtons: string[] = ["⌫", "C", "CE"]
 
+    console.log(operationPipeline.at(-1))
     function calculate(key: string): void {
-        
-        if(CurrentNumber[0] === "0" && operands.includes(key)) {
+
+        if (CurrentNumber[0] === "0" && operands.includes(key)) {
             setCurrentNumber([])
         }
 
-        if(ControlButtons.includes(key)) {
+        if (ControlButtons.includes(key)) {
             switch (key) {
                 case "⌫":
-                    if(waitingState[0]) {
+                    if (waitingState[0]) {
                         break;
                     }
-                    CurrentNumber.length > 1 ? 
-                       setCurrentNumber(prev => prev.slice(0, -1)) :
-                       setCurrentNumber(["0"]);
+                    CurrentNumber.length > 1 ?
+                        setCurrentNumber(prev => prev.slice(0, -1)) :
+                        setCurrentNumber(["0"]);
                     break;
                 case "C":
                     setCurrentNumber(["0"])
                     setRecord([])
                     break;
-                case "CE": 
+                case "CE":
                     setCurrentNumber(["0"])
                     break;
             }
-        } 
+        }
 
-        if(operands.includes(key)) {
-            if(waitingState[0]) {
+        if (operands.includes(key)) {
+            if (waitingState[0]) {
                 setCurrentNumber([])
             }
             setCurrentNumber(prev => [...prev, key])
-            setWaitingState(prev => [prev[0] = false])
-            console.log(CurrentNumber.length)
+            setWaitingState([false, false])
         }
 
-        if(operators.includes(key)) {
-            setWaitingState(prev => [prev[0] = true])
-            if(operators.includes(Record.at(-1)!)) {
+        if (operators.includes(key)) {
+
+            setWaitingState([true, true])
+            if (operators.includes(Record.at(-1)!)) {
                 setRecord(prev => [...prev.slice(0, -1), key])
+
+                if (waitingState[1] && operationPipeline.at(-1)?.operator) {
+                    setOperationPipeline(prev => {
+                        const lastIndex = prev.length - 1;
+                        return prev.map((val, index) => {
+                            if (index === lastIndex) {
+                                return { ...val, operator: key }
+                            }
+                            return val;
+                        })
+                    })
+                }
+                console.log(operationPipeline.at(-1))
             } else {
                 const CompleteNumber = CurrentNumber.join('');
                 setRecord([CompleteNumber, key])
+                setOperationPipeline(prev => [...prev, {
+                    num1: CompleteNumber,
+                    operator: key,
+                    num2: "",
+                    result: ""
+                }])
             }
-            
-            if(CurrentNumber[0] != "0" && Record.length > 1) {
-                const num1 = parseFloat(Record[0]!)
+
+            if (!waitingState[1] && Record.length > 1) {
+                const num1 = parseFloat(operationPipeline.at(-1)?.num1!)
                 const num2 = parseFloat(CurrentNumber.join(''))
+                const operator = operationPipeline.at(-1)?.operator
                 let result: number;
-                switch (key) {
+                switch (operator) {
                     case "+": result = num1 + num2
-                              setRecord([`${result}`, key])
-                              setCurrentNumber([`${result}`])
-                              break;
+                        setRecord([`${result}`, key])
+                        setCurrentNumber([`${result}`])
+                        break;
                     case "−": result = num1 - num2
-                              setRecord([`${result}`, key])
-                              setCurrentNumber([`${result}`])
-                              break;
+                        setRecord([`${result}`, key])
+                        setCurrentNumber([`${result}`])
+                        break;
                     case "÷": result = num1 / num2
-                              setRecord([`${result}`, key])
-                              setCurrentNumber([`${result}`])
-                              break;
+                        setRecord([`${result}`, key])
+                        setCurrentNumber([`${result}`])
+                        break;
                     case "×": result = num1 * num2
-                              setRecord([`${result}`, key])
-                              setCurrentNumber([`${result}`])
-                              break;
+                        setRecord([`${result}`, key])
+                        setCurrentNumber([`${result}`])
+                        break;
                 }
-            }  
+
+                setOperationPipeline(prev => {
+                    const length = operationPipeline.length - 1
+                    return prev.map((val, index) => {
+                        if(index === length) {
+                            return {...val, num1: `${result}`, operator: key, num2: `${num2}`}
+                        }
+                        return val
+                    })
+                })
+            }
         }
     }
 
@@ -101,12 +141,12 @@ export default function Calculator() {
                         ">
             <div className="flex flex-col flex-2 text-white m-1">
                 <Header />
-                <Display value={CurrentNumber} record={Record}/>
+                <Display value={CurrentNumber} record={Record} />
                 <MemoryButton />
-                <Keypad calculate={calculate}/>
+                <Keypad calculate={calculate} />
             </div>
             <div className="flex-1 flex flex-col">
-                <HistoryAndMemory/>
+                <HistoryAndMemory />
             </div>
         </div>
     )
