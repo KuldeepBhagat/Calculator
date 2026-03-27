@@ -24,7 +24,30 @@ export default function Calculator() {
     const specialOperators: string[] = ["%", "¹/ₓ", "x²", "√x"]
     const ControlButtons: string[] = ["⌫", "C", "CE"]
 
-    console.log(operationPipeline.at(-1))
+    console.log(operationPipeline)
+    
+    function Calculate(key: string): number {
+        const num1 = parseFloat(operationPipeline.at(-1)?.num1!)
+        const operator = operationPipeline.at(-1)?.operator
+        const num2 = parseFloat(CurrentNumber.join(''))
+        let result: number;
+
+        switch(operator) {
+            case "+": result = num1 + num2
+                      break;
+            case "−": result = num1 - num2
+                      break
+            case "×": result = num1 * num2
+                      break;
+            case "÷": result = num1 / num2
+                      break
+            default: result = 0
+        }
+
+        return result
+
+    }
+
     function calculate(key: string): void {
 
         if (CurrentNumber[0] === "0" && operands.includes(key)) {
@@ -76,7 +99,7 @@ export default function Calculator() {
                         })
                     })
                 }
-                console.log(operationPipeline.at(-1))
+
             } else {
                 const CompleteNumber = CurrentNumber.join('');
                 setRecord([CompleteNumber, key])
@@ -89,29 +112,12 @@ export default function Calculator() {
             }
 
             if (!waitingState[1] && Record.length > 1) {
-                const num1 = parseFloat(operationPipeline.at(-1)?.num1!)
-                const num2 = parseFloat(CurrentNumber.join(''))
-                const operator = operationPipeline.at(-1)?.operator
-                let result: number;
-                switch (operator) {
-                    case "+": result = num1 + num2
-                        setRecord([`${result}`, key])
-                        setCurrentNumber([`${result}`])
-                        break;
-                    case "−": result = num1 - num2
-                        setRecord([`${result}`, key])
-                        setCurrentNumber([`${result}`])
-                        break;
-                    case "÷": result = num1 / num2
-                        setRecord([`${result}`, key])
-                        setCurrentNumber([`${result}`])
-                        break;
-                    case "×": result = num1 * num2
-                        setRecord([`${result}`, key])
-                        setCurrentNumber([`${result}`])
-                        break;
-                }
 
+                const result = Calculate(key)
+                const num2 = parseFloat(CurrentNumber.join(''))
+
+                setRecord([`${result}`, key])
+                setCurrentNumber([`${result}`])
                 setOperationPipeline(prev => {
                     const length = operationPipeline.length - 1
                     return prev.map((val, index) => {
@@ -121,6 +127,11 @@ export default function Calculator() {
                         return val
                     })
                 })
+            }
+
+            if(!waitingState[1] && Record.length > 1 && key === "=") {
+                let result = Calculate(key)
+
             }
         }
     }
