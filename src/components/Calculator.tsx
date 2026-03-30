@@ -64,7 +64,18 @@ export default function Calculator() {
         return result
     }
 
-    function calculate(key: string): void {
+    function ManageHistory(index: number) {
+        const SelectedHistory = historyPipeline[index]
+        if (!SelectedHistory) return;
+        setRecord([
+            SelectedHistory.num1,
+            SelectedHistory.operator,
+            SelectedHistory.num2,
+            "=",
+        ])
+        setCurrentNumber([SelectedHistory.result])
+    }
+    function Calculation(key: string): void {
 
         if (CurrentNumber[0] === "0" && operands.includes(key)) {
             setCurrentNumber([])
@@ -140,7 +151,7 @@ export default function Calculator() {
         }
 
         if (Record.length > 1 && key === "=") {
-            // this code can be sorted but im too lazy to do so
+            // this messy part will be sorted in future
             const operator = Record.at(1)
             if (Record.at(-1) === "=") {
                 setRecord(prev => prev.map((val, index) => index === 0 ? CurrentNumber.join('') : val))
@@ -176,10 +187,10 @@ export default function Calculator() {
                 <Header />
                 <Display value={CurrentNumber} record={Record} />
                 <MemoryButton />
-                <Keypad calculate={calculate} />
+                <Keypad calculate={Calculation} />
             </div>
             <div className="flex-1 flex flex-col min-h-0">
-                <HistoryAndMemory historyPipeline={historyPipeline} />
+                <HistoryAndMemory historyPipeline={historyPipeline} ManageHistory={ManageHistory} />
             </div>
         </div>
     )

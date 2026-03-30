@@ -8,10 +8,11 @@ type operation = {
     }
 
 type props = {
-    historyPipeline: operation[]
+    historyPipeline: operation[],
+    ManageHistory: (index: number) => void
 }
 
-export default function HistoryAndMemory({historyPipeline}: props) {
+export default function HistoryAndMemory({historyPipeline, ManageHistory}: props) {
     const buttonStyle = "p-2 hover:text-white/50"
 
     const [activeTab, setActiveTab] = useState<string>("History");
@@ -42,7 +43,10 @@ export default function HistoryAndMemory({historyPipeline}: props) {
                                                       "hidden" : ""}`}>
                 {historyPipeline.map((m, index) => {
                     return (
-                        <button key={index} className="p-3 shrink-0 flex justify-end text-white/40 hover:bg-white/10 cursor-pointer rounded-sm">
+                        <button key={index} onClick={() => ManageHistory(index)} className="p-3 shrink-0 
+                                                        flex justify-end
+                                                        text-white/40 hover:bg-white/10 
+                                                        cursor-pointer rounded-sm">
                             {m.num1} {m.operator} {m.num2} = {m.result}
                         </button>
                     )
