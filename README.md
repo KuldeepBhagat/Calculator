@@ -38,4 +38,4 @@ State LifeCycle. React may stack the state or won't immediately update the value
 ## final Note
 i don't know when i will work on this project again but it taught me a lot of new things. Calculator seems easy to write project and it is easy if someone just wants basic
 function but cloning Windows calculator is challanging it's not simple at all and scientific calculator is anotehr beast to handle, overall a great project to work on. Since it's 
-taking a lot of my time i'll be moving on to the next project. **Chasing perfection without the experties to achive it leads to silence**
+taking a lot of my time i'll be moving on to the next project. **Chasing perfection without the experties leads to burnout**
