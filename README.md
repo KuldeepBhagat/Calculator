@@ -1,7 +1,7 @@
 # 🧮 React Glassmorphism Calculator
 A sleek, functional calculator built with **React**, **TypeScript**, and **Tailwind CSS**.
 
-![Preview](./screenshots/my-image.jpg
+![Preview](./screenshots/Sample.png
 
 ## 🚀 The Challenge: "State Explosion"
 This project was a deep dive into complex state management. Since a Calculator has many condition that effect other components and the behaviour of all the states
